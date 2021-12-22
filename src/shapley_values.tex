@@ -1,0 +1,107 @@
+\begin{frame}{Shapley Values}{Introduction}
+    What is the primary objective?
+    \begin{itemize}
+        \item Explain any model
+    \end{itemize}
+    \begin{quote}
+        It is impossible to trust a machine learning model without understanding how and why it makes
+        its decisions and whether these decisions are justified~\cite{explainability}.
+    \end{quote}
+\end{frame}
+
+\begin{frame}{Shapley Values}{Background}
+    Game theory background:
+    \begin{itemize}
+        \item A set of players have contributed differently to achieving a prize
+        \item How can the payout be calculated according to the contribution?
+    \end{itemize}
+    Real life example for application of Shapley Values:
+    \begin{itemize}
+        \item Sharing a taxi to different destinations
+        \item How can the bill be distributed among the passengers?
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Shapley Values}{Application}
+    Application in emotion analysis through texts
+    \begin{itemize}
+        \item How much did each word contribute to the models/ classifiers output?
+    \end{itemize}
+    \begin{figure}
+        \centering
+        \includegraphics[width=0.9\textwidth]{shap_1}
+        \caption{Blackbox feature contribution view}
+    \end{figure}
+\end{frame}
+
+\begin{frame}{Shapley Values}{Binary Classification}
+    Comparison of weighted contribution of a feature-set to other inputs prediction results
+    \begin{itemize}
+        \item Example: Binary Classification
+    \end{itemize}
+    \begin{figure}
+        \centering
+        \includegraphics[width=0.85\textwidth]{shap_2}
+        \caption{Feature contributions with reference to average model output}
+    \end{figure}
+\end{frame}
+
+\begin{frame}{Shapley Values}{Mathematical Definition}
+    \(N = Set~of~Attributes, n = |N|, v = function\)
+    \vspace{1.5cm}
+    \begin{displaymath}
+        \Phi_i(v) = \sum_{S \subseteq N \setminus \{i\}}~\frac{|S|!~(n-|S|-1)!}{n!}~(v(S \cup \{i\})-v(S))
+    \end{displaymath}
+\end{frame}
+
+\begin{frame}{Shapley Values}{Example}
+    Black Box Classifier for recognition of sentences as greeting
+    \begin{itemize}
+        \item Classifier model \textrightarrow{} \(v\), Example: \textquotedblleft Hello there\textquotedblright
+        \item \(h=\)\textquotedblleft Hello\textquotedblright, \(t=\)\textquotedblleft there\textquotedblright
+        \item \(v(h)=0.5, v(t)=0.25\)
+        \item \(v(ht)\) = 1 \textrightarrow{} (classified as greeting)\\
+        \(\{h,t\}\) \textrightarrow{} \(\{h\}, \{h,t\}\) or \(\{t\}, \{h,t\}\)
+    \end{itemize}
+
+\end{frame}
+
+\begin{frame}
+    \(v(\{t\})*\frac{1}{n!}=\frac{1}{4}*\textcolor{red}{\frac{1}{2}}\),
+    \((v(\{h,t\})-v(\{h\}))*\frac{1}{n!}=(1-\frac{1}{2})*\textcolor{red}{\frac{1}{2}}\)\\
+    \vspace{5mm}
+    \textrightarrow{} \(\Phi_t(v)=\frac{1}{8}+\frac{1}{4}=\frac{3}{8}\)\\
+    \vspace{10mm}
+    \(v(\{h\})*\frac{1}{n!}=\frac{1}{2}*\textcolor{red}{\frac{1}{2}}\),
+    \((v(\{h,t\})-v(\{t\}))*\frac{1}{n!}=(1-\frac{1}{4})*\textcolor{red}{\frac{1}{2}}\)\\
+    \vspace{5mm}
+    \textrightarrow{} \(\Phi_h(v)=\frac{3}{8}+\frac{1}{4}=\frac{5}{8}\)
+    \pause
+    \begin{figure}
+        \centering
+        \includegraphics[width=0.9\textwidth]{example}
+    \end{figure}
+\end{frame}
+
+\begin{frame}{Shapley Values}{Observations}
+    \begin{itemize}
+        \item \(v\) can be any function \textrightarrow{} model-agnostic technique
+        \item Feature contribution comparison through different models possible
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Shapley Values}{Limitations}
+    \begin{itemize}
+        \item Selection of subsets of features necessary
+        \begin{itemize}
+            \item Exponential scaling in number of features
+            \item Attempts to reduce complexity through approximations for known models
+        \end{itemize}
+        \item Dependent of model reaction to unrealistic input
+        \begin{itemize}
+            \item Example: longitude and latitude delivered as separate features in housing price estimation\\
+            \textrightarrow{} Housing prices for lake sites could influence accuracy of approximated shapley values
+            \item Exploitable weakness
+        \end{itemize}
+    \end{itemize}
+\end{frame}

@@ -1,0 +1,100 @@
+%! Author = Noah Lehmann
+%! Date = 21.12.21
+% Preamble
+\documentclass{beamer}
+
+\usepackage{textcomp}
+\usepackage{biblatex}
+\usepackage{xcolor}
+\usepackage{blindtext}
+\usepackage{graphicx}
+\usepackage{ulem}
+
+
+\addbibresource{main.bib}
+\useoutertheme{miniframes}
+\graphicspath{ {./images/} }
+\beamertemplatenavigationsymbolsempty
+
+% Document
+\title[Shapley Values]{Understanding Emotion Classification}
+\subtitle{Through Shapley Values}
+\author{Noah Lehmann}
+\institute{University of Applied Sciences Hof}
+\date[23.12.2021]{Data Mining and Machine Learning, 23.12.2021}
+
+\begin{document}
+
+    \maketitle
+
+    \begin{frame}{Table of Contents}
+        \tableofcontents
+    \end{frame}
+
+
+    \section{Introduction}
+    \begin{frame}{Introduction to Emotion Analysis}
+        Why?
+        \begin{itemize}
+            \item Recognize major changes in behaviour
+            \item Pre-classify hate speech
+            \item Detect depressive tendencies
+        \end{itemize}
+        How?
+        \begin{itemize}
+            \item Well-balanced data from multiple cultures
+            \item Detect tendencies of word combinations
+            \item Use on social media, text messengers and mail services
+        \end{itemize}
+    \end{frame}
+
+    \begin{frame}{Text Classification}
+        What data-set is used?
+        \textrightarrow{} Text collection with five emotions (anger, fear, sadness, neutral, happy)
+        \begin{enumerate}
+            \item 5 emotions \textrightarrow{} further insights \linebreak higher complexity
+            \item Only detect sadness \textrightarrow{} specialized \linebreak less data required
+        \end{enumerate}
+    \end{frame}
+
+    \section{Solution}
+
+    \begin{frame}{Solution}{Text Preparation}
+        \begin{itemize}
+            \item Reduce Data-set to binary classification
+            \item Sample all non-sad-classified rows
+            \item Remove Stopwords
+            \item Reduce word complixity
+            \item Tokenize Texts
+        \end{itemize}
+        Primary Goal: Reduce complexity and feature set
+    \end{frame}
+
+    \begin{frame}{Solution}{Classification}
+        Attempt and tweak multiple classifiers
+        \begin{itemize}
+            \item Naive Bayes
+            \item Decision Trees
+            \item SVM
+            \item Random Forest
+        \end{itemize}
+        \textcolor{red}{How do we get insights into the more complex models?}
+        \begin{itemize}
+            \item Some have good explainability
+            \item For others: \textbf{Shapley Values}
+        \end{itemize}
+    \end{frame}
+
+    \section{Shapley Values}
+    \input{shapley_values}
+
+%    \section{Summary}
+%    \begin{frame}{Summary}
+%        Empty yet
+%    \end{frame}
+
+    \begin{frame}[allowframebreaks]{Bibliography}
+        \nocite{*}
+        \printbibliography
+    \end{frame}
+\end{document}

@@ -1,0 +1,80 @@
+\documentclass[sigconf]{acmart}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage[main=english, ngerman]{babel}
+\usepackage{xcolor}
+\usepackage[nolist]{acronym}
+\usepackage{wasysym}
+\usepackage{textcomp}
+\usepackage{csquotes}
+\usepackage{color}
+\usepackage{siunitx}
+
+\graphicspath{ {./images/} }
+
+\AtBeginDocument{
+    \providecommand\BibTeX{{
+        \normalfont B\kern-0.5em{\scshape i\kern-0.25em b}\kern-0.8em\TeX}}}
+
+\acmYear{2021}
+\acmConference[Data Mining and Machine Learning WS21/22]{University of Applied Sciences Hof, 06.12.2021}{06.12.2021}{Hof, Germany}
+\setcopyright{none}
+\settopmatter{printacmref=false}
+\renewcommand\footnotetextcopyrightpermission[1]{}
+
+\begin{document}
+    \input{acronyms.tex}
+    \title{Understanding Emotion Classification}
+    \subtitle{Through Shapley Values}
+    \author{Noah Lehmann}
+    \email{noah.lehmann@hof-university.de}
+    \affiliation{
+        \institution{University of Applied Sciences}
+        \streetaddress{Alfons-Goppel-Platz 1}
+        \city{Hof}
+        \country{Germany}
+        \postcode{95028}
+    }
+
+    \begin{abstract}
+        In a time where \acp{AI} offer more and more applications it is vital to have full control and understanding of
+        how the Models come to their decisions.
+        Take for instance the field of medicine, where \acp{AI} can be used to determine whether a picture of some human
+        fiber does indeed carry malicious deceases.
+        In such cases the user - in the example given being a doctor - must understand how the \ac{AI} came to its
+        conclusion, be it just to verify the correctness of the outcome.
+        As the Models used in \acp{AI} get more complex and transform to black box models, it gets a lot harder to
+        understand the inside of such a model.
+        This is where Shapley-Values can help developers and users to understand the importance of features affecting a
+        model in its decision process.
+        Shapley-Values come from a game theory background and test the importance of input features to the outcome of a
+        model by comparing the feature's contribution in comparison to the contribution of all possible combinations of
+        features and their weights.
+        By simply testing all combinations of input to the model, the application of Shapley-Values are model-agnostic,
+        their only downside being the computation time in complex scenarios.
+    \end{abstract}
+
+    \keywords{Kryptowährungen, Bitcoin, Blockchain, Konsens-Protokoll, Dezentralität}
+
+    \maketitle
+
+    \section{Introduction}
+    \input{paper/introduction}
+
+    \section{Sadness Detection}
+    \input{paper/sadness}
+    \label{sec:sadness}
+
+    \section{Shapley Values}
+    \input{paper/shap}
+
+    \section{Implementation}
+    \input{paper/implementation}
+
+    ~\nocite{*}
+    \bibliographystyle{ACM-Reference-Format}
+    \bibliography{main}
+    \appendix
+
+
+\end{document}

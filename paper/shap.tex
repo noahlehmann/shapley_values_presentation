@@ -1,0 +1,284 @@
+As aforementioned, the complexity and importance of decisions \acp{AI} make, shapes the need for a way to understand how
+the decisions were actually made.
+The concept of explaining a models way of working is called \ac{XAI}.
+The key idea of this concept can be described as followed:
+\begin{quotation}
+    It is impossible to trust a machine learning model with-
+    out understanding how and why it makes its decisions and
+    whether these decisions are justified\cite{explainability}.
+\end{quotation}
+
+The key objective of \ac{XAI} therefore is to understand any model.
+One technique to achieve this in a sufficient manner is the calculation of \emph{Shapley Values}.
+The following chapter will describe the concepts of Shapley Values and show its usage in an example.
+
+\subsection{Background}
+\label{subsec:background}
+
+In order to grasp the idea of Shapley Values fully, it is helpful to look at the background of Shapley Values.
+Shapley Values have their origin in the mathematical field of \emph{Game Theory}, which - according to the Cambridge Dictionary - is
+~\enquote{a mathematical theory about how decisions are made in situations where one person's decision affects another
+    [\ldots]\cite{game_theory}}.
+Let's look at this theory from the perspective of an actual game through an example.
+
+Consider a group of players in a tournament forming a team.
+At the end of the tournament, this team actually wins and will receive a payout as reward for the first place.
+Looking at the teams efforts, there are generally two ways to distribute the payout fairly.
+
+\begin{enumerate}
+    \item \textbf{Equal Payout:}\\
+    In a team which can only win, if all players are present and participating, one can consider the contribution or
+    importance of each player as equal, thus making an equal payout the only fair option, as the team would not have
+    been able to compete without any of its members.
+    \item \textbf{Contribution-dependent Payout:}\\
+    In a team which will only change its efficiency, if one player does not attend or is handicapped, the payout cannot
+    be calculated as easily.
+    It is now dependent on how each player contributed to the actual outcome and therefore makes the calculation far more
+    complex.
+\end{enumerate}
+
+As mentioned, the calculation of an equal payout is trivial, however the calculation of the payout to each player depending
+on his or her contribution to the outcome is not.
+The later case is the exact use case for \emph{Shapley Values}.
+Another real life scenario for the usage of Shapley Values could be the fair distribution of a taxi bill, for which all
+passengers were driven to a different destination.
+
+\subsection{Usage in Emotion Analysis}
+
+Shapley Values can be used in understanding a models decision of an emotion classification for a whole text block.
+In this case each relevant word will be checked for its contribution to the outcome as a whole.
+Given the sentence \textit{I am very sad today.}, a well-trained model would come to the conclusion, that this text indeed
+has a sad motivation.
+Let's look at the following example in figure~\ref{fig:blackbox}, where - with a certainty of \num{90}\% - a model rated the sentence above as \emph{sad}.
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.45\textwidth]{shap_1}
+    \caption{Blackbox feature contribution view}
+    \label{fig:blackbox}
+\end{figure}
+Figure~\ref{fig:blackbox} shows, how the calculation of Shapley Values can divide the contribution from each word to the total
+of 90\% certainty and thus gives the user the possibility to check on the models decision.
+If it were to interpret contextual non-sad words as contributing largely to the total outcome, a human interpreter would easily
+detect an error in the decision, even if the actual outcome was correct.
+
+Notice, how in figure~\ref{fig:blackbox} the model is not defined and rather displayed as a blackbox model, meaning that
+the calculation of Shapley Values happens completely model agnostic.
+Why exactly this works will be shown in chapter~\ref{subsec:shap_math}.
+
+One more feature of Shapley Values is the calculation and categorisation of an outcome in comparison to the models decision-making
+in general.
+If we take a look at the example of emotion analysis again, we could consider a model which tends to classify one in ten
+texts as \emph{sad}.
+This gives an initial orientation of how the model tends to work.
+If we now also take into consideration, how the model reacts to the same word in different sentences, we can see the total
+benefit of Shapley Values.
+Figure~\ref{fig:comp} shows how the calculation can be interpreted with the comparison to the classification of the same words
+in other sentences.
+\vspace{0.5cm}
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.45\textwidth]{shap_2}
+    \caption{Blackbox feature contribution view}
+    \label{fig:comp}
+\end{figure}
+Shapley Values not only calculate a features - in the case of emotion analysis a word - contribution to the model's outcome
+in \emph{one} sentence, they also take the words effects on \emph{other} sentences and classifications into account.
+
+\subsection{Mathematical Definition}
+\label{subsec:shap_math}
+
+As Shapley Values have their origin in the mathematical field of \emph{Game Theory}, it is important to understand their
+mathematical definition, before further examining their applications in \ac{XAI} and actual implementations.
+
+Before looking at the complete formula for te calculation of Shapley Values, some variables need to be defined:
+
+\begin{itemize}
+    \item \(N =\) Set of all Attributes \textit{\textrightarrow{} features or words}
+    \item \(n = |N|\)
+    \item \(v =\) Function \textit{\textrightarrow{} classifier, black box}
+\end{itemize}
+
+With the most important variables defined, let's look at the definition for Shapley Values:
+
+\begin{figure}[h]
+    \begin{displaymath}
+        \Phi_i(v) = \sum_{S \subseteq N \setminus \{i\}}~\frac{|S|!~(n-|S|-1)!}{n!}~(v(S \cup \{i\})-v(S))
+    \end{displaymath}
+    \caption{Definition of Shapley Values}
+\end{figure}
+\label{math:shap}
+\vspace{0.5cm}
+
+\(\Phi_i\) in this case is the contribution of a selected feature \(i\) to the outcome of the function \(v\) if applied
+to a sentence with the set of words \(N\).
+Shapley Values calculate the contribution of each feature to the total outcome, so for an outcome like in figure~\ref{fig:blackbox},
+formula~\ref{math:shap} must be calculated for all \(i \in N\) - meaning for all words in a sentence, referring to the
+example of emotion analysis.
+
+The rest of the formula generally consists of three parts, the contribution of a feature \(i\) to the function \(v\)'s
+output when applied to a subset of \(N\) excluding \(i\), \(S \subset N \setminus \{i\}\), it's weighted importance to other combinations
+of \(S \subset N \setminus \{i\}\) and the sum of all these weighted importances for all possible subsets of \(N\) excluding \(i\),
+\(S \subseteq N \setminus \{i\}\), where the empty set \(\emptyset\) should not be forgotten.
+
+Looking at these parts separately will make grasping the formula in total easier.
+Consider the first part of the ones mentioned above, the contribution of the feature \(i\) to the outcome of \(v\) when
+applied to a random subset of \(N \setminus \{i\}\).
+
+This part states the following: \((v(S \cup \{i\})-v(S))\).
+This states, that the function \(v\) must be applied to both a subset of \(N \setminus \{i\}\), as well as to the same subset
+including \(i\).
+The difference in the outcomes of both function calls will then weight with the importance of the chosen subset \(S \subseteq N \setminus \{i\}\).
+This will be done by looking at the sizes of both \(S\) and \(N\) and keeping the total count of possible subsets of both
+in mind.
+
+This is calculated by the following part: \(\frac{|S|!~(n-|S|-1)!}{n!}\).
+Here the total number of possible subsets of both all elements of \(S\) and all other elements in \(N\) - a set \(X \cup N \setminus \{i\},S\),
+are multiplied and then weight with the total number of all possible subsets of \(N\).
+
+As each weighted contribution of \(i\) to any subset \(S\) now only has the importance of the size of \(S\), the importances
+of \(i\) need to be compared and summed over all possible variations of \(S \cup N \setminus \{i\}\).
+This will calculate the importance of \(i\) in comparison to all other attributes - or words - of \(N\).
+
+The summation is declared in the following part: \(\sum_{S \subseteq N \setminus \{i\}}\).
+
+As mentioned above, the formula only calculates the Shapley Value for one feature \(i\), so for this to be compared to
+all the other features for an input to a model, the formula must be applied for all features \(i \in N\).
+
+\subsection{Example}
+\label{subsec:example}
+
+To make the formula more understandable and to reduce complexity to the formula itself, an example can be used to show the
+calculation of Shapley Values.
+Consider the use case of a black box classifier, which is trained for recognizing greetings in texts.
+Given are the Classifier model \(v\) and the example Sentence \(N\) consisting of the words \(\{"Hello" = h, "There" = t\}\).
+A classification output of \num{1} states a recognized greeting with a certainty of \num{100}\%, whereas 0 is classified
+as no greeting with the same certainty.
+
+After running the model on the sentence as a whole and the single words in \(N\), the following is observed:
+\begin{itemize}
+    \item \(v(\{h\}) = 0.5\)
+    \item \(v(\{t\}) = 0.25\)
+    \item \(v(\{h,t\}) = 1\)
+\end{itemize}
+
+Considering the need for all possible subsets of \(N\), the following subsets have been identified:
+\begin{itemize}
+    \item \(\{h,t\}\)
+    \item \(\{h\}\)
+    \item \(\{t\}\)
+    \item \(\emptyset\)
+\end{itemize}
+
+After filling in the needed values, the formula now looks like this:
+\linebreak
+\vspace{0.3cm}
+\begin{displaymath}
+    \Phi_i(v) = \sum_{S \subseteq \{h,t\} \setminus \{i\}}~\frac{1}{2}~(v(S \cup \{i\})-v(S))
+\end{displaymath}
+\vspace{0.3cm}
+\linebreak
+Like mentioned in chapter~\ref{subsec:shap_math}, the Shapley Values' formula now needs to be calculated for all items \(i\) in
+\(N\), being \(h\) and \(t\).
+For the contribution of \(h\) the calculations are the following:\\
+\vspace{0.3cm}
+\begin{displaymath}
+    \Phi_h(v) = \sum_{S \subseteq \{\{t\},\emptyset\} \subseteq \{h,t\} \setminus \{h\}}~\frac{1}{2}~(v(S \cup \{i\})-v(S))
+\end{displaymath}
+\vspace{0.3cm}
+\linebreak
+Likewise for the contribution of \(t\) the calculations are the following:
+\linebreak
+\vspace{0.3cm}
+\begin{displaymath}
+    \Phi_t(v) = \sum_{S \subseteq \{\{h\},\emptyset\} \subseteq \{h,t\} \setminus \{t\}}~\frac{1}{2}~(v(S \cup \{i\})-v(S))
+\end{displaymath}
+\vspace{0.3cm}
+\linebreak
+This results in the following calculations:
+\vspace{0.3cm}
+\begin{displaymath}
+    \Phi_t(v) = \frac{1}{4} * \frac{1}{2} + (1-\frac{1}{2}) * \frac{1}{2}
+    = \frac{1}{8} + \frac{1}{4} = \frac{3}{8}
+\end{displaymath}
+\vspace{0.3cm}
+\begin{displaymath}
+    \Phi_h(v) = \frac{1}{2} * \frac{1}{2} + (1-\frac{1}{4}) * \frac{1}{2}
+    = \frac{3}{8} + \frac{1}{4} = \frac{5}{8}
+\end{displaymath}
+\vspace{0.3cm}
+\linebreak
+The Shapley Values for \emph{Hello} and \emph{there} for our black box classifier now are \(\frac{5}{8}\) and \(\frac{3}{8}\),
+resulting in an added total of \num{1}, which is the classifiers result for the sentence \textit{Hello there}, as displayed in
+figure~\ref{fig:sum_ex}.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.45\textwidth]{example}
+    \caption{Summation of \(\Phi_h(v)\) and \(\Phi_t(v)\)}
+    \label{fig:sum_ex}
+\end{figure}
+
+\subsection{Observations}
+
+\paragraph{Additivity}
+Looking at the example in chapter~\ref{subsec:example} one axiom of Shapley Values gets clear.
+It is the axiom of \emph{additivity}, which states, that all Shapley Values for a set of attributes add up to the original
+output of all those attributes combined.
+This becomes significantly important in the concept described in the beginning of chapter~\ref{subsec:background}, where
+the idea of a distribution by contribution of an outcome is explained.
+
+\paragraph{Model Agnosticism}
+\label{par:agnostic}
+In principle, the calculation of Shapley Values is model-agnostic.
+This can clearly be shown in the formula~\ref{math:shap}'s definition, where \(v\) is only defined as a function, in particular
+a black box function, meaning that the inner workings of this function are irrelevant and that only the output matters.
+Especially in the field of \ac{AI} this marks a benefit of Shapley Values, as they can be used to calculate the feature importance
+for any kind of model.
+
+\paragraph{Comparability}
+As explained in paragraph~\ref{par:agnostic} - \nameref{par:agnostic}, Shapley Values are model-agnostic, thus making them usable for most models.
+When working with different models, be it in a learning process, decision making process or a development of an \ac{AI}-product,
+Shapley Values can be applied to all these models.
+This helps the user to identify differences in the decision-making and allows him to compare the models with each other.
+
+\subsection{Limitations}
+
+When looking at the definition of Shapley Values, two major limitation strike through.
+
+\paragraph{Complexity}
+As the calculation has to be done for all features and for all possible subsets, the complexity grows exponentially with
+the size of the feature set.
+In most use cases with large feature set, a preselection must be done before calculation the Shapley Values for the
+selected features.
+An alternative to a preselection of features is a preselection of subsets to be iterated for each feature.
+Both of the techniques make the use of Shapley Values an approximation of their real outcomes in real use cases.
+
+Another attempt to reduce the computational complexity is to reduce the computation time of the model itself, as it
+needs to be called twice for each iteration (selected subset) and feature.
+Approximations like \ac{LIME} can be used to reduce the models structural complexity, but again making the outcome an
+approximation.
+If other techniques like \ac{LIME} are used, this also limits the calculation of Shapley Values to the limits defined
+by the chosen approximation.
+
+\paragraph{Output-Irrelevancy}
+When applying approximation like \ac{LIME} as stated above, the subsets usually are not selected evenly, but rather
+created in a way that serves as closest to other subsets as possible, making the actual values inside the subset a combination
+of actual values from multiple input examples.
+Those computed values can cause issues in cases, where the combination of such make no sense in the respective context.
+
+Take for instance a model which calculates house price estimations depending on the geographical location.
+If the \emph{longitude} and \emph{latitude} are now delivered as separate features and chosen as an approximation from
+different subsets, then the calculation could include housing prices for sites in uninhabitable locations.
+This again influences the accuracy of the approximated Shapley Values.
+
+\subsection{Conclusion}
+
+As the limitations above are only applicable, when the calculation of the Shapley Values surpass a computational limit, requiring
+an approximation to reduce the complexity, they can be avoided by simple not approximating.
+
+Shapley Values offer a simple way of understanding the feature importances of a model output and thus the model.
+As the mathematical usage is rather simple, the usage is applicable to a wider user base, even for beginners in the field
+of \ac{XAI}.
+Due to the complexity, the explanation of models is somewhat limited to the bulk-processing or continuous processing on the
+server side.
+A real time computation and explanation on a users enddevice is hardly doable and therefore not recommended.

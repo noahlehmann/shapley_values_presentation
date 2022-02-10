@@ -1,10 +1,221 @@
-
 The following chapter will discuss the scenario set up for the explanation of \ac{XAI} through Shapley Values.
 It will prepare all information needed to grasp the concept of emotion analysis and its practical application.
-An actual implementation will be shown alongside the key components and will be written in the programming language \emph{Python}.
+An actual implementation will be shown alongside the key components.
 
 \subsection{Introduction}
 
+The project is written in the programming language \emph{Python 3}.
+Python provides an easy learning curve for beginners, as it can be used to quickly implement prototypes and offers
+lots of libraries, of which some will be shown later in this chapter.
+The development environment is set up in \emph{colab.research.google.com}, which provides a Python prepared environment
+and has lots of libraries for the application of \ac{AI} pre-installed.
+
+\paragraph{Libraries}
+As an assistance to the programmer, the use of libraries is proposed.
+In the actual implementation, the following libraries were chosen:
+\begin{itemize}
+    \item \ac{NLTK}:
+    The \ac{NLTK}-Library provides an array of preparation tools for the use with natural language, in the case of
+    this project, text.
+    \item TensorFlow:
+    TensorFlow provides tools for automated workflows to reduce the complexity in the programming and avoid boilerplate
+    code.
+    \item Keras:
+    Keras is a library which facilitates the use of Neural Networks.
+    \item Scikit-Learn:
+    The Scikit-Learn Library is used for the simplified use of common \ac{AI} tools, like preprocessing steps and
+    models.
+    \item \ac{SHAP}:
+    \ac{SHAP} is a library which provides an implementation of Shapley Values, mostly using approximations as described
+    in chapter~\ref{subsec:shap_math}.
+\end{itemize}
+
+\paragraph{Classification}
+As shortly introduced in this paper, the use case is an emotion classification.
+When classifying a dataset, the number of possible classes need to be defined beforehand.
+When using two classes, the classification is called \emph{binary}.
+As only two classes are needed, fewer data needs to be used for training the model and a high accuracy is achieved a lot simpler.
+When more than two classes are used, the classification is called a \emph{multiclass classification}, needing more training data,
+whereas a high accuracy is harder to achieve.
+As the next paragraph will show, the dataset used for this project is not enough for a multiclass classification, thus falling
+back to a binary classification to reduce complexity.
+
+\paragraph{Dataset}
+The dataset used in this project consists of two attributes, a text and the corresponding emotion that text expresses.
+It consists of about \num{11300} entries and a total of \num{5} emotions, \emph{anger}, \emph{neutral}, \emph{sadness},
+\emph{joy} and \emph{fear}.
+As mentioned above, the complexity of classifying all emotions is too high, whereas comparing only one emotion, sadness,
+is possible with the size of the given data.
+Table~\ref{tab:data} shows an excerpt of the dataset used for this project.
+\begin{table}[]
+    \begin{tabular}{|ll|}
+        \hline
+        \multicolumn{1}{|c|}{\textbf{Emotion}} & \multicolumn{1}{c|}{\textbf{Text}}                   \\ \hline
+        \multicolumn{1}{|l|}{neutral}          & There are tons of other paintings that I thin\ldots  \\ \hline
+        \multicolumn{1}{|l|}{sadness}          & Yet the dog had grown old and less capable , a\ldots \\ \hline
+        \multicolumn{1}{|l|}{fear}             & When I get into the tube or the train without \ldots \\ \hline
+        \multicolumn{1}{|l|}{fear}             & This last may be a source of considerable dis\ldots  \\ \hline
+        \multicolumn{2}{|c|}{\ldots} \\ \hline
+    \end{tabular}
+    \caption{Excerpt of the used dataset}
+    \label{tab:data}
+\end{table}
+In order to reduce the complexity of the dataset and convert the classification to binary, all \emph{non-sad} entries
+were marked as such.
+After that, a matching number equal to the count of \emph{sad} entries are chosen from the \emph{non-sad} entries, equally
+representing the original emotions.
+
 \subsection{Preprocessing}
+\label{subsec:nltk}
+In order to ease the computation of text, some preprocessing must be done.
+As this is not the primary objective of this project, the preprocessing will only be limited to a summary.
+
+\paragraph{Preparation}
+The first step in the preprocessing is to index the emotions, converting their actual name to an index representing it.
+As the classification is binary, the indices will be \num{1} for sad texts and \num{0} for non-sad texts.
+
+\paragraph{Stopwords}
+As the complexity of natural language processing rises with long texts containing irrelevant words, these words, also called
+\emph{stopwords}, need to be removed first.
+Examples for these words are \textit{I}, \textit{and} or \textit{is}.
+In thi step the unnecessary characters like punctuations or kommas need to be removed as well.
+
+\paragraph{Lemmatization}
+In order to have a clear reference for each word, no matter in what modification they are used, the words need to be
+lemmatized.
+This means they need to be reduced to their word-stem
+
+\paragraph{Tokenization}
+As in the preparation step, the words now need to be indexed to be easily computed.
+
+\paragraph{Padding}
+In the case of some classifiers, like the \ac{CNN} used in this project, the sentence lengths need to be aligned in order
+to be fitted to the algorithms used.
+This process is called padding.
+The words can either be filled with blanks to the front or back of the sentence or, if the sentences are too long, reduced from
+the fron or back of the sentences.
+This process is not necessary for the other two classifiers used in this project, Naive Bayes and Random Forest.
 
 \subsection{Classification}
+
+The following classifiers are used in the project:
+
+\paragraph{Naive Bayes}
+Naive Bayes classifiers are supervised learning methods applying the Bayes-Theorem in combination of the assumption
+of conditional independence, making it \textit{naive}\cite{bayes}.
+The Scikit-Learn library implements multiple Naive Bayes classifiers for an easy usage.
+The code used in this project can be summed up as followed:
+\begin{lstlisting}[language=Python]
+from sklearn.naive_bayes \
+    import MultinomialNB
+nb = MultinomialNB()
+nb.fit(X_train, y_train)
+nb_pred = nb.predict(X_test)
+\end{lstlisting}
+
+\paragraph{Random Forest}
+Random Forest classifiers use an array of decision trees which average their outcomes on samples of the data for a more
+balanced overall outcome\cite{random}.
+Again, the Scikit-Learn library offers a simple way to use this classifier, which is shown in the following listing:
+\begin{lstlisting}[language=Python]
+from sklearn.ensemble \
+    import RandomForestClassifier
+rf = RandomForestClassifier()
+rf.fit(X_train, y_train)
+rf_pred = rf.predict(X_test)
+\end{lstlisting}
+
+\paragraph{Recurrent \ac{NN}}
+\acp{RNN} are \acp{NN} which intentionally run multiple time, feeding in an outcome to the next run.
+They are specifically useful for text processing\cite{rnn}.
+Google Tensorflow library provides easy access to the implementation of \acp{NN} and is therefore used in the project
+as follows:
+\begin{lstlisting}[language=Python]
+from tensorflow.keras.models \
+    import Sequential
+model = Sequential()
+model.add(Embedding(...))
+model.add(Bidirectional(...))
+model.add(Dense(...))
+model.add(Dense(...))
+model.fit(...)
+\end{lstlisting}
+
+\subsection{Explanation}
+
+Looking at the classifiers above, they work quite differently compared to each other.
+Even though their output is in the same format, configuring and interpreting their outcomes is not as easy.
+This is where Shapley Values can help to simplify the explanation of the outcomes through checking each words contribution
+to the classifiers decision of whether the input sentence was \emph{sad} or \emph{non-sad}.
+
+The \ac{SHAP} Python library offers an easy way to use already implemented forms of Shapley Value calculations with
+built-in optimizers to reduce computing complexities.
+As the definition of Shapley Values and their possible optimizations already have been explained in chapter~\ref{subsec:shap_math},
+the specific implementation of the used \emph{Kernel-\ac{SHAP}-Explainer} will not be explained here in detail.
+In general, it \enquote{is a method that uses a special weighted linear regression to compute the importance of each feature}\cite{kernel}.
+The usage of \ac{SHAP} is quite simple and look like the following:
+
+\begin{lstlisting}[language=Python]
+from shap import shap
+# x is a sample set of the data
+shap_rf = KernelExplainer(rf.predict, x)\
+    .shap_values(x)
+shap_nb = KernelExplainer(nb.predict, x)\
+    .shap_values(x)
+shap_rnn = KernelExplainer(model.predict, x)\
+    .shap_values(x)
+\end{lstlisting}
+
+The following example text will be used to compare the outputs of the three classifiers, which all classified the sentence
+as \emph{sad}.
+
+\textit{Yet the dog had grown old and less capable, and one day the gillie had come and
+explained with great sorrow that the dog had suffered a stroke, and must be put down.}
+
+If the Shapley Values are now to be plotted as bar graphs, to make them more interpretable, the following code can be
+executed:
+
+\begin{lstlisting}[language=Python]
+from shap import shap
+shap.initjs()
+summary_plot(shap_nb[...],  ...)
+summary_plot(shap_rf[...],  ...)
+summary_plot(shap_rnn[...], ...)
+\end{lstlisting}
+
+The graphs now show the following:
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.45\textwidth]{nb_shap}
+    \caption{Top 8 Shapley Values for the Naive Bayes classifier}
+\end{figure}
+Even though the Naive Bayes classifier correctly identified the sentence as \emph{sad}, the outcome seems to be rather
+incidental, as the words shown as highly influential do not have any sad tendencies.
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.45\textwidth]{rf_shap}
+    \caption{Top 8 Shapley Values for the Random Forest classifier}
+\end{figure}
+The Random Forest classifier identified more words as actually sad, which makes it generally more accurate, but still not trustable.
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.45\textwidth]{rnn_shap}
+    \caption{Top 8 Shapley Values for the \ac{RNN}}
+\end{figure}
+The \ac{RNN} offers the best result in comparing the Shapley Values through all the used classifiers.
+It correctly identified the sentence as \emph{sad} as well as interpreting the correct words as highly influential.
+
+\subsection{Summary}
+
+As the focus was not set on the correct setup of the classifiers, slight misinterpretations can be seen in all results
+shown by the calculated Shapley Values.
+Instead of reducing the works' outcome, this actually enhances the view on the benefits of Shapley Values.
+Comparing the three classifiers clearly shows, that the technique is model-agnostic.
+Also, if one looks at the outcomes, it is clear that the explainability in these classifications shows, that the decisions
+themselves where not flawless, which would have been less obvious if only the models outputs had been taken into
+consideration, as they all classified the example sentence as correctly \emph{sad}.
+
+In summary, Shapley Values offer an easy introduction to the field of \ac{XAI}, as their calculation is rather simple and
+they can be used in a wide range of use-cases, given by their mode-agnosticism.
+
+

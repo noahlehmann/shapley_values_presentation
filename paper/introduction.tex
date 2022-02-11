@@ -1,4 +1,4 @@
-\ac{ML} has come a long way in the last few years and starts to unfold possibilities that nobody could think of just recently.
+\ac{ML} has come a long way in the last few years and starts to unfold possibilities that nobody could have thought of just recently.
 Distributed learning for instance makes it possible to train highly sophisticated models while still preserving the data's
 owners privacy rights.
 On the other hand, \acp{AI} have come far enough to beat human professionals in all kinds of quests, making them more powerful -
@@ -16,11 +16,11 @@ can be analysed and later categorised, thus recognizing patterns early and then 
 steps in helping the user to overcome his or her problems.
 
 The emotion analysis described here comes with multiple caveats, mainly in the concern of data privacy and regulations concerning
-the analysis of the written data and in the way, the models recognize patterns and thus decide on whether they have spotted
+the analysis of the written data and in the way the models recognize patterns and thus decide on whether they have spotted
 a pattern of depression.
 
 As this study paper is only trying to show the potential of the idea, the data privacy regulations and all other aspects
-to be considered when handling and analysing user data, will not be discussed.
+to be considered when handling and analysing user data will not be discussed.
 The consideration of how the models make their decisions and what makes them decide as they do will be a main part of the
 analysis though and will be discussed thoroughly later in the paper.
 
@@ -34,9 +34,9 @@ flows.
 One sensitive topic is emotion analysis, where a user could potentially be classified as depressive in how they write and speak.
 Emotion analysis could gather the users outputs in multiple formats, analyse them in bulks and recognize major changes in
 their behaviour.
-This can be used in different ways, on the one hand recognizing texts that should be banned from social media, such as hate speech
-and similar types of texts.
-On the other hand this can, as described before, also recognize depressive tendencies, thus providing help in early stages.
+This can be used in different ways, on one hand recognizing texts that should be banned from social media, such as hate speech
+and similar types of texts,
+on the other hand this can, as described before, also recognize depressive tendencies, thus providing help in early stages.
 
 Chapter~\ref{sec:sadness} will discuss such an approach to \emph{sadness}-detection, alongside a short summary of an
 implementation of an emotion analysis application and the explainability of this application through Shapley Values.
@@ -44,18 +44,17 @@ implementation of an emotion analysis application and the explainability of this
 \subsection{Explainable \ac{AI}}
 \label{subsec:xai}
 
-As mentioned before, \acp{AI} get more and more complex.
-Especially looking at models like \emph{Neural Networks} becoming more complex, it is vital to be able to understand
+As mentioned before \acp{AI} get more and more complex.
+Especially looking at models like \acp{NN} becoming more complex, it is vital to be able to understand
 the decision-making process of these models.
 The concept of explaining a models way of working is called \ac{XAI}.
 The key idea of this concept can be described as followed:
 \begin{quotation}
-    It is impossible to trust a machine learning model with-
-    out understanding how and why it makes its decisions and
+    It is impossible to trust a machine learning model without understanding how and why it makes its decisions and
     whether these decisions are justified\cite{explainability}.
 \end{quotation}
 
-So with \ac{AI} getting more and more complex and important tasks to solve, humans need to be able to find errors or
-potential problems.
+So with \ac{AI} having to solve more and more complex and important tasks, humans need to be able to find errors or
+potential problems in their training and functionality.
 The following chapters will discuss an attempt to \ac{XAI} through the calculation Shapley Values, followed by an application
 which attempts to understand emotion analysis through Shapley Values.

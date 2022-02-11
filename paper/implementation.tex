@@ -78,22 +78,22 @@ As the classification is binary, the indices will be \num{1} for sad texts and \
 As the complexity of natural language processing rises with long texts containing irrelevant words, these words, also called
 \emph{stopwords}, need to be removed first.
 Examples for these words are \textit{I}, \textit{and} or \textit{is}.
-In thi step the unnecessary characters like punctuations or kommas need to be removed as well.
+In this step the unnecessary characters like punctuations or kommas need to be removed as well.
 
 \paragraph{Lemmatization}
 In order to have a clear reference for each word, no matter in what modification they are used, the words need to be
 lemmatized.
-This means they need to be reduced to their word-stem
+This means they need to be reduced to their word-stem.
 
 \paragraph{Tokenization}
 As in the preparation step, the words now need to be indexed to be easily computed.
 
 \paragraph{Padding}
-In the case of some classifiers, like the \ac{CNN} used in this project, the sentence lengths need to be aligned in order
+In the case of some classifiers, like the \ac{RNN} used in this project, the sentence lengths need to be aligned in order
 to be fitted to the algorithms used.
 This process is called padding.
-The words can either be filled with blanks to the front or back of the sentence or, if the sentences are too long, reduced from
-the fron or back of the sentences.
+The words can either be filled with blanks to the beginning or end of the sentence or, if the sentences are too long, reduced from
+the beginning or end of the sentences.
 This process is not necessary for the other two classifiers used in this project, Naive Bayes and Random Forest.
 
 \subsection{Classification}
@@ -128,7 +128,7 @@ rf_pred = rf.predict(X_test)
 \paragraph{Recurrent \ac{NN}}
 \acp{RNN} are \acp{NN} which intentionally run multiple time, feeding in an outcome to the next run.
 They are specifically useful for text processing\cite{rnn}.
-Google Tensorflow library provides easy access to the implementation of \acp{NN} and is therefore used in the project
+Googles TensorFlow library provides easy access to the implementation of \acp{NN} and is therefore used in the project
 as follows:
 \begin{lstlisting}[language=Python]
 from tensorflow.keras.models \
@@ -152,12 +152,12 @@ The \ac{SHAP} Python library offers an easy way to use already implemented forms
 built-in optimizers to reduce computing complexities.
 As the definition of Shapley Values and their possible optimizations already have been explained in chapter~\ref{subsec:shap_math},
 the specific implementation of the used \emph{Kernel-\ac{SHAP}-Explainer} will not be explained here in detail.
-In general, it \enquote{is a method that uses a special weighted linear regression to compute the importance of each feature}\cite{kernel}.
-The usage of \ac{SHAP} is quite simple and look like the following:
+In general, it \enquote{is a method that uses a special weighed linear regression to compute the importance of each feature}\cite{kernel}.
+The usage of \ac{SHAP} is quite simple and looks like the following:
 
 \begin{lstlisting}[language=Python]
 from shap import shap
-# x is a sample set of the data
+# x is a sample sentence
 shap_rf = KernelExplainer(rf.predict, x)\
     .shap_values(x)
 shap_nb = KernelExplainer(nb.predict, x)\
@@ -196,7 +196,7 @@ incidental, as the words shown as highly influential do not have any sad tendenc
     \includegraphics[width=0.45\textwidth]{rf_shap}
     \caption{Top 8 Shapley Values for the Random Forest classifier}
 \end{figure}
-The Random Forest classifier identified more words as actually sad, which makes it generally more accurate, but still not trustable.
+The Random Forest classifier identified more words as correctly sad, which makes it generally more accurate, but still not trustable.
 \begin{figure}[h]
     \centering
     \includegraphics[width=0.45\textwidth]{rnn_shap}
@@ -211,7 +211,7 @@ As the focus was not set on the correct setup of the classifiers, slight misinte
 shown by the calculated Shapley Values.
 Instead of reducing the works' outcome, this actually enhances the view on the benefits of Shapley Values.
 Comparing the three classifiers clearly shows, that the technique is model-agnostic.
-Also, if one looks at the outcomes, it is clear that the explainability in these classifications shows, that the decisions
+Also, if one looks at the outcomes, it is clear that the explainability in these classifications shows that the decisions
 themselves where not flawless, which would have been less obvious if only the models outputs had been taken into
 consideration, as they all classified the example sentence as correctly \emph{sad}.
 

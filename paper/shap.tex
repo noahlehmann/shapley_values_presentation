@@ -80,7 +80,7 @@ in \emph{one} sentence, they also take the words effects on \emph{other} sentenc
 \label{subsec:shap_math}
 
 As Shapley Values have their origin in the mathematical field of \emph{Game Theory}, it is important to understand their
-mathematical definition, before further examining their applications in \ac{XAI} and actual implementations.
+mathematical definition, before further examining their applications in \ac{XAI} and actual implementations\cite{shap_youtube,shapley}.
 
 Before looking at the complete formula for the calculation of Shapley Values, some variables need to be defined:
 
@@ -96,7 +96,7 @@ With the most important variables defined, let's look at the definition of Shapl
     \begin{displaymath}
         \Phi_i(v) = \sum_{S \subseteq N \setminus \{i\}}~\frac{|S|!~(n-|S|-1)!}{n!}~(v(S \cup \{i\})-v(S))
     \end{displaymath}
-    \caption{Definition of Shapley Values}
+    \caption{Definition of Shapley Values\cite{shap_maths}}
 \end{figure}
 \label{math:shap}
 \vspace{0.5cm}
